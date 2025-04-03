@@ -1,12 +1,16 @@
-import React from 'react'
+import { SessionProvider } from './context/SessionContext'
+import Authenticate from './components/Authenticate'
 
 function App() {
   return (
-    <main>
-      <header>
-        <h1>Chat App</h1>
-      </header>
-    </main>
+    <SessionProvider>
+      <main>
+        <header>
+          <h1>Chat App</h1>
+          <Authenticate />
+        </header>
+      </main>
+    </SessionProvider>
   )
 }
 
