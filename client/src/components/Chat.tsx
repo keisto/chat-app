@@ -114,10 +114,17 @@ export default function Chat() {
               })}
           </div>
         </div>
-        <CreateRoom socket={socket} setRoom={setRoom} />
+        {isAuthenticated && <CreateRoom socket={socket} setRoom={setRoom} />}
       </div>
       <div className="col-span-3 sm:col-span-2 flex flex-col gap-4">
-        {isAuthenticated ? <ChatList messages={messages} currentUser={user!} /> : null}
+        {isAuthenticated ? (
+          <ChatList messages={messages} currentUser={user!} />
+        ) : (
+          <div className="flex bg-stone-200 rounded-lg shadow-inner h-screen max-h-[50vh] items-center justify-center px-6 gap-2">
+            🔒
+            <p className="text-stone-500 text-sm">Sign in to create and view messages.</p>
+          </div>
+        )}
         <form onSubmit={handleSendMessage} className="flex flex-col">
           <fieldset className="flex flex-col mb-6">
             <label htmlFor="message" className="text-stone-500 text-sm mb-2">
@@ -127,12 +134,16 @@ export default function Chat() {
               id="message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="min-h-16 py-2 px-4 rounded-lg focus:outline-none border border-stone-200 resize-y"
+              className={
+                'min-h-16 py-2 px-4 rounded-lg focus:outline-none border border-stone-200 resize-y disabled:opacity-50'
+              }
+              disabled={!isAuthenticated}
             ></textarea>
           </fieldset>
           <button
             type="submit"
-            className="ml-auto bg-cyan-500 border-2 border-b-4 border-cyan-600 text-stone-100 rounded-lg h-10 px-2 font-bold active:bg-cyan-600 active:border-b-2 hover:border-b-[5px]"
+            className="ml-auto bg-cyan-500 border-2 border-b-4 border-cyan-600 text-stone-100 rounded-lg h-10 px-2 font-bold active:bg-cyan-600 active:border-b-2 hover:border-b-[5px] disabled:opacity-50"
+            disabled={!isAuthenticated}
           >
             Send
           </button>

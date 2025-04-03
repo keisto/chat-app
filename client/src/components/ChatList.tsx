@@ -7,7 +7,7 @@ type Props = {
 
 export default function ChatList({ messages, currentUser }: Props) {
   return (
-    <ul className="flex flex-col gap-4 bg-stone-200 rounded-lg shadow-inner p-6 pt-2 overflow-y-scroll h-screen max-h-[50vh] relative justify-end">
+    <ul className="flex flex-col gap-4 bg-stone-200 rounded-lg shadow-inner p-6 pt-2 overflow-y-scroll h-screen max-h-[50vh] justify-end">
       {messages.map((chatMessage) => {
         return (
           <li
