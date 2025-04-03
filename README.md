@@ -13,11 +13,16 @@
 ## Code Checkpoints
 - 90 min mark: https://github.com/keisto/chat-app/tree/f30a5f13c3ec0ed496af9b53d99dc7c70bb4bd37
   - Server has socket.io installed client doesn't yet
-  - Video walk through: ![App Walkthrough at timelimit](https://share.cleanshot.com/c04jkttW)
+  - Video walk through:
+  <video width="320" height="240" controls>
+    <source src="https://youtu.be/Qv3pDtDlV2U" type="video/mp4">
+  </video>
+
 - 120 min mark: https://github.com/keisto/chat-app/tree/2f5708385a7d8ab5ff351c160f0a253b78747bcd
   - Added client has socket.io set up, messages work, no ability to change/create rooms
 - ~3 hours - Final: https://github.com/keisto/chat-app
-  - Still room for improvement: ![App Screenshot](https://share.cleanshot.com/MQ4BFdvg">)
+  - Still room for improvement:
+  <img src="./screenshot.png" alt="App Screenshot">
 
 ## Next Steps
 
