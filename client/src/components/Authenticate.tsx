@@ -15,7 +15,7 @@ export default function Authenticate() {
   return (
     <>
       {isAuthenticated ? (
-        <div className="flex items-center gap-4">
+        <div className="flex justify-between sm:justify-normal w-full sm:w-auto items-center gap-4">
           <p>
             <span className="text-stone-500">Welcome:</span> {user?.username}
           </p>

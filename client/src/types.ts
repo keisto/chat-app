@@ -10,3 +10,7 @@ export type Room = {
   usersOnline: number
   messages: Message[]
 }
+
+export type User = {
+  username: string
+}

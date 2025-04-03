@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Message, Room } from '../types'
 import { io, Socket } from 'socket.io-client'
 import { useSession } from '../context/SessionContext'
+import ChatList from './ChatList'
 
 const DEFAULT_ROOM = 'General'
 
@@ -81,7 +82,7 @@ export default function Chat() {
   }
 
   return (
-    <div className="grid grid-cols-3 gap-12">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-12">
       <div className="col-span-1">
         <h2>{room}</h2>
         <form onSubmit={handleCreateRoom}>
@@ -99,22 +100,23 @@ export default function Chat() {
           </button>
         </form>
       </div>
-      <div className="col-span-2">
-        <ul className="flex flex-col gap-2 bg-stone-200 rounded-lg shadow-inner">
-          {messages.map((chatMessage) => {
-            return <li key={chatMessage.id}>{chatMessage.message}</li>
-          })}
-        </ul>
-        <form onSubmit={handleSendMessage}>
-          <fieldset>
+      <div className="col-span-2 flex flex-col gap-4">
+        <ChatList messages={messages} currentUser={user!} />
+        <form onSubmit={handleSendMessage} className="flex flex-col">
+          <fieldset className="flex flex-col mb-6">
             <label htmlFor="message" className="text-stone-500 text-sm mb-2">
               Message
             </label>
-            <textarea id="message" value={message} onChange={(e) => setMessage(e.target.value)}></textarea>
+            <textarea
+              id="message"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="min-h-16 py-2 px-4 rounded-lg focus:outline-none border border-stone-200 resize-y"
+            ></textarea>
           </fieldset>
           <button
             type="submit"
-            className="bg-cyan-500 border-2 border-b-4 border-cyan-600 text-stone-100 rounded-lg h-10 px-2 font-bold active:bg-cyan-600 active:border-b-2 hover:border-b-[5px]"
+            className="ml-auto bg-cyan-500 border-2 border-b-4 border-cyan-600 text-stone-100 rounded-lg h-10 px-2 font-bold active:bg-cyan-600 active:border-b-2 hover:border-b-[5px]"
           >
             Send
           </button>
