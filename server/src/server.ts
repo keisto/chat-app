@@ -43,6 +43,22 @@ const createRoom = (name: string) => {
   chat.push(room)
 }
 
+const increaseUsersOnline = (room: string) => {
+  const currentRoom = getRoom(room)
+  if (currentRoom) {
+    currentRoom.usersOnline++
+  }
+}
+
+const decreaseUsersOnline = (room: string) => {
+  const previousRoom = getRoom(room)
+  if (previousRoom && previousRoom.usersOnline > 0) {
+    previousRoom.usersOnline--
+  }
+}
+
+const socketRooms = new Map<string, string>()
+
 const io = new Server(server, {
   cors: {
     origin: 'http://localhost:3000',
@@ -53,15 +69,21 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
   console.log('connected: ', socket.id)
   socket.join(DEFAULT_ROOM)
+  socketRooms.set(socket.id, DEFAULT_ROOM)
 
   socket.emit('room:get', { rooms: chat })
 
   socket.on('room:change', (data: { room: string }) => {
     socket.rooms.forEach((room) => {
+      decreaseUsersOnline(room)
       socket.leave(room)
     })
 
     socket.join(data.room)
+    increaseUsersOnline(data.room)
+    socketRooms.set(socket.id, data.room)
+
+    io.emit('room:get', { rooms: chat })
 
     const room = getRoom(data.room)
     if (room) {
@@ -73,11 +95,8 @@ io.on('connection', (socket) => {
     let room = getRoom(data.room)
     if (!room) {
       createRoom(data.room)
+      socketRooms.set(socket.id, data.room)
     }
-
-    chat.forEach((room) => {
-      io.to(room.name).emit('room:get', { rooms: chat })
-    })
   })
 
   socket.on('chat:send', (data: { room: string; message: string; username: string }) => {
@@ -99,6 +118,13 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log('disconnected: ', socket.id)
+
+    const room = socketRooms.get(socket.id)
+    if (room) {
+      decreaseUsersOnline(room)
+      socketRooms.delete(socket.id)
+      io.emit('room:get', { rooms: chat })
+    }
   })
 })
 

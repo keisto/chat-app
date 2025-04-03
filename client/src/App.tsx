@@ -5,7 +5,7 @@ import Chat from './components/Chat'
 function App() {
   return (
     <SessionProvider>
-      <div className="font-mono max-w-2xl px-6 lg:px-6 mx-auto">
+      <div className="font-mono text-stone-800 max-w-2xl px-6 lg:px-6 mx-auto">
         <header className="flex items-center justify-between py-6 mb-6 flex-wrap">
           <div className="flex items-center gap-2">
             💬
