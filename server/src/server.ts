@@ -34,15 +34,13 @@ const getRoom = (name: string): Room | null => {
   return room
 }
 
-const createRoom = (name: string): Room => {
+const createRoom = (name: string) => {
   const room: Room = {
     name,
     usersOnline: 0,
     messages: [],
   }
   chat.push(room)
-
-  return room
 }
 
 const io = new Server(server, {
@@ -55,6 +53,26 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
   console.log('connected: ', socket.id)
   socket.join(DEFAULT_ROOM)
+
+  socket.emit('room:get', { rooms: chat })
+
+  socket.on('room:change', (data: { room: string }) => {
+    socket.rooms.forEach((room) => {
+      socket.leave(room)
+    })
+
+    socket.join(data.room)
+
+    const room = getRoom(data.room)
+    io.emit('chat:get', { messages: room ? room.messages : [] })
+  })
+
+  socket.on('room:create', (data: { room: string }) => {
+    let room = getRoom(data.room)
+    if (!room) {
+      createRoom(data.room)
+    }
+  })
 
   socket.on('chat:send', (data: { room: string; message: string; username: string }) => {
     const room = getRoom(data.room)
@@ -71,20 +89,6 @@ io.on('connection', (socket) => {
     })
 
     io.to(room.name).emit('chat:get', { messages: room.messages })
-  })
-
-  socket.on('room:change', (data: { room: string }) => {
-    const room = getRoom(data.room)
-    io.emit('chat:get', { messages: room ? room.messages : [] })
-  })
-
-  socket.on('room:create', (data: { room: string }) => {
-    let room = getRoom(data.room)
-    if (!room) {
-      room = createRoom(data.room)
-    }
-
-    io.emit('room:change', { room })
   })
 
   socket.on('disconnect', () => {
