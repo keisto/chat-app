@@ -37,7 +37,6 @@ export const SessionProvider: React.FC<Props> = ({ children }) => {
 
       if (response.ok) {
         const data = await response.json()
-        console.log('HERE', data)
         setUser(data.user)
       } else {
         console.log(await response.json())

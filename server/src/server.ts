@@ -25,6 +25,26 @@ app.use(
 const DEFAULT_ROOM = 'General'
 const chat: Room[] = [{ name: DEFAULT_ROOM, usersOnline: 0, messages: [] }]
 
+const getRoom = (name: string): Room | null => {
+  const room = chat.find((room) => room.name === name)
+  if (!room) {
+    return null
+  }
+
+  return room
+}
+
+const createRoom = (name: string): Room => {
+  const room: Room = {
+    name,
+    usersOnline: 0,
+    messages: [],
+  }
+  chat.push(room)
+
+  return room
+}
+
 const io = new Server(server, {
   cors: {
     origin: 'http://localhost:3000',
@@ -37,7 +57,8 @@ io.on('connection', (socket) => {
   socket.join(DEFAULT_ROOM)
 
   socket.on('chat:send', (data: { room: string; message: string; username: string }) => {
-    const room = chat.find((room) => room.name === data.room)
+    const room = getRoom(data.room)
+
     if (!room) {
       return
     }
@@ -50,6 +71,20 @@ io.on('connection', (socket) => {
     })
 
     io.to(room.name).emit('chat:get', { messages: room.messages })
+  })
+
+  socket.on('room:change', (data: { room: string }) => {
+    const room = getRoom(data.room)
+    io.emit('chat:get', { messages: room ? room.messages : [] })
+  })
+
+  socket.on('room:create', (data: { room: string }) => {
+    let room = getRoom(data.room)
+    if (!room) {
+      room = createRoom(data.room)
+    }
+
+    io.emit('room:change', { room })
   })
 
   socket.on('disconnect', () => {
