@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Message, Room } from '../types'
 import { io, Socket } from 'socket.io-client'
+import { useSession } from '../context/SessionContext'
 
 const DEFAULT_ROOM = 'General'
 
 export default function Chat() {
+  const { user, isAuthenticated } = useSession()
   const [room, setRoom] = useState(DEFAULT_ROOM)
   const [newRoom, setNewRoom] = useState('')
   const [socket, setSocket] = useState<Socket | null>(null)
@@ -72,34 +74,52 @@ export default function Chat() {
 
     socket.emit('chat:send', {
       message,
-      username: 'tony', // hard coded because we need to be in a nested component to access session
+      username: user?.username,
       room,
     })
     setMessage('')
   }
 
   return (
-    <div>
-      <h2>{room}</h2>
-      <form onSubmit={handleCreateRoom}>
-        <fieldset>
-          <label htmlFor="new-room">New Room</label>
-          <input id="new-room" value={newRoom} onChange={(e) => setNewRoom(e.target.value)}></input>
-        </fieldset>
-        <button type="submit">Send</button>
-      </form>
-      <ul>
-        {messages.map((chatMessage) => {
-          return <li key={chatMessage.id}>{chatMessage.message}</li>
-        })}
-      </ul>
-      <form onSubmit={handleSendMessage}>
-        <fieldset>
-          <label htmlFor="message">Message</label>
-          <textarea id="message" value={message} onChange={(e) => setMessage(e.target.value)}></textarea>
-        </fieldset>
-        <button type="submit">Send</button>
-      </form>
+    <div className="grid grid-cols-3 gap-12">
+      <div className="col-span-1">
+        <h2>{room}</h2>
+        <form onSubmit={handleCreateRoom}>
+          <fieldset>
+            <label htmlFor="new-room" className="text-stone-500 text-sm mb-2">
+              New Room
+            </label>
+            <input id="new-room" value={newRoom} onChange={(e) => setNewRoom(e.target.value)}></input>
+          </fieldset>
+          <button
+            type="submit"
+            className="ml-auto bg-cyan-500 border-2 border-b-4 border-cyan-600 text-stone-100 rounded-lg h-10 px-2 font-bold active:bg-cyan-600 active:border-b-2 hover:border-b-[5px]"
+          >
+            Create
+          </button>
+        </form>
+      </div>
+      <div className="col-span-2">
+        <ul className="flex flex-col gap-2 bg-stone-200 rounded-lg shadow-inner">
+          {messages.map((chatMessage) => {
+            return <li key={chatMessage.id}>{chatMessage.message}</li>
+          })}
+        </ul>
+        <form onSubmit={handleSendMessage}>
+          <fieldset>
+            <label htmlFor="message" className="text-stone-500 text-sm mb-2">
+              Message
+            </label>
+            <textarea id="message" value={message} onChange={(e) => setMessage(e.target.value)}></textarea>
+          </fieldset>
+          <button
+            type="submit"
+            className="bg-cyan-500 border-2 border-b-4 border-cyan-600 text-stone-100 rounded-lg h-10 px-2 font-bold active:bg-cyan-600 active:border-b-2 hover:border-b-[5px]"
+          >
+            Send
+          </button>
+        </form>
+      </div>
     </div>
   )
 }
