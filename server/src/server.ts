@@ -64,7 +64,9 @@ io.on('connection', (socket) => {
     socket.join(data.room)
 
     const room = getRoom(data.room)
-    io.emit('chat:get', { messages: room ? room.messages : [] })
+    if (room) {
+      io.to(room.name).emit('chat:get', { messages: room ? room.messages : [] })
+    }
   })
 
   socket.on('room:create', (data: { room: string }) => {
@@ -72,6 +74,10 @@ io.on('connection', (socket) => {
     if (!room) {
       createRoom(data.room)
     }
+
+    chat.forEach((room) => {
+      io.to(room.name).emit('room:get', { rooms: chat })
+    })
   })
 
   socket.on('chat:send', (data: { room: string; message: string; username: string }) => {

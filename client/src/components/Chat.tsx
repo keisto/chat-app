@@ -3,13 +3,13 @@ import { Message, Room } from '../types'
 import { io, Socket } from 'socket.io-client'
 import { useSession } from '../context/SessionContext'
 import ChatList from './ChatList'
+import CreateRoom from './CreateRoom'
 
 const DEFAULT_ROOM = 'General'
 
 export default function Chat() {
   const { user, isAuthenticated } = useSession()
   const [room, setRoom] = useState(DEFAULT_ROOM)
-  const [newRoom, setNewRoom] = useState('')
   const [socket, setSocket] = useState<Socket | null>(null)
   const [rooms, setRooms] = useState<Room[]>([])
   const [messages, setMessages] = useState<Message[]>([])
@@ -54,19 +54,6 @@ export default function Chat() {
     setMessages([])
   }, [socket, room])
 
-  const handleCreateRoom = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (!socket) {
-      return
-    }
-
-    socket.emit('room:create', {
-      room: newRoom,
-    })
-    setRoom(newRoom)
-    setNewRoom('')
-  }
-
   const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!socket) {
@@ -83,25 +70,31 @@ export default function Chat() {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-12">
-      <div className="col-span-1">
-        <h2>{room}</h2>
-        <form onSubmit={handleCreateRoom}>
-          <fieldset>
-            <label htmlFor="new-room" className="text-stone-500 text-sm mb-2">
-              New Room
-            </label>
-            <input id="new-room" value={newRoom} onChange={(e) => setNewRoom(e.target.value)}></input>
-          </fieldset>
-          <button
-            type="submit"
-            className="ml-auto bg-cyan-500 border-2 border-b-4 border-cyan-600 text-stone-100 rounded-lg h-10 px-2 font-bold active:bg-cyan-600 active:border-b-2 hover:border-b-[5px]"
-          >
-            Create
-          </button>
-        </form>
+      <div className="col-span-3 sm:col-span-1 flex flex-col gap-6">
+        <div>
+          <span className="text-stone-500">Current Room:</span>
+          <h2 className="text-lg font-bold">{room}</h2>
+        </div>
+        <div>
+          <h3 className="text-stone-500">Rooms:</h3>
+          <div className="flex flex-wrap gap-2">
+            {rooms.map((otherRoom) => {
+              return (
+                <button
+                  key={otherRoom.name}
+                  onClick={() => setRoom(otherRoom.name)}
+                  className="bg-stone-200 border-2 border-b-4 border-stone-300 text-stone-700 rounded-lg h-10 px-2 font-bold active:bg-stone-300 active:border-b-2 hover:border-b-[5px]"
+                >
+                  {otherRoom.name}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+        <CreateRoom socket={socket} setRoom={setRoom} />
       </div>
-      <div className="col-span-2 flex flex-col gap-4">
-        <ChatList messages={messages} currentUser={user!} />
+      <div className="col-span-3 sm:col-span-2 flex flex-col gap-4">
+        {isAuthenticated ? <ChatList messages={messages} currentUser={user!} /> : null}
         <form onSubmit={handleSendMessage} className="flex flex-col">
           <fieldset className="flex flex-col mb-6">
             <label htmlFor="message" className="text-stone-500 text-sm mb-2">
