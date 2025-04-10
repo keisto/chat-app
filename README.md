@@ -10,18 +10,6 @@
 1. Run `npm i`
 2. Run `npm run start`
 
-## Code Checkpoints
-- 90 min mark: https://github.com/keisto/chat-app/tree/f30a5f13c3ec0ed496af9b53d99dc7c70bb4bd37
-  - Server has socket.io installed client doesn't yet
-  - Video walk through: [Walkthrough at 90 min)](https://youtu.be/Qv3pDtDlV2U)
-
-
-- 120 min mark: https://github.com/keisto/chat-app/tree/2f5708385a7d8ab5ff351c160f0a253b78747bcd
-  - Added client has socket.io set up, messages work, no ability to change/create rooms
-- ~3 hours - Final: https://github.com/keisto/chat-app
-  - Still room for improvement:
-  <img src="./screenshot.png" alt="App Screenshot">
-
 ## Next Steps
 
 1. Protect socket events with authorization
