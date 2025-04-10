@@ -1,5 +1,7 @@
 # Chat App
 
+<img src="./screenshot.png" alt="App Screenshot">
+
 ## Client - Front End (React)
 ### Launch Project
 1. Run `npm i`
